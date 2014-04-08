@@ -1,0 +1,33 @@
+.DS_Store
+.svn/
+djangosite/settings/local.py
+local.py
+.DS_Store
+dev.db
+*.pyc
+*~
+pip-log.txt
+virtualenvsettings.py
+virtualenv
+static/*
+
+# Aptana templates
+.tmp_*~
+
+
+# Pycharm stuff
+.idea/
+media/*
+willard*.json
+WillardXero.ipynb
+correct time.ipynb
+datetime.ipynb
+djangosite/templates/harvest_data/project_report.html
+site24x7.ipynb
+*.sql
+
+#coverage stuff
+.coverage
+htmlcov/
+
+.env
