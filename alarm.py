@@ -47,7 +47,8 @@ def schedule(localtime, command_body):
     }
 
     response = requests.post(SCHEDULE_URL, data=json.dumps(data))
-    print response.content
+    if not response.code == 200:
+        print response.content
 
 def clear_schedules():
     r = requests.get(SCHEDULE_URL).json()
@@ -88,18 +89,3 @@ def set_ramped_alarms(num_days, origin_time, destination_time):
         d = day1 + n * diff
         print n, d
         set_one_alarm(d)
-
-
-# clear_schedules()
-# set_next_alarm(time(5, 15   ))
-# set_one_alarm(datetime.now()+timedelta(seconds=4))
-
-
-# set_ramped_alarms(20, time(7,30), time(6,00))
-
-
-# state = STAGES[-1][1]
-# response = requests.put(STATE_URL, data=json.dumps(state))
-# print STATE_URL
-# print response
-# print response.content
