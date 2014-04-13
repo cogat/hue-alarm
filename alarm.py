@@ -34,7 +34,7 @@ SCHEDULE_URL = "%s/schedules" % (API_URL)
 
 
 def schedule(localtime, command_body):
-    local_dt = local.localize(localtime)
+    local_dt = local .localize(localtime)
     utc_dt = local_dt.astimezone(pytz.utc)
 
     data = {
