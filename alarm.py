@@ -1,18 +1,10 @@
 import json
 import requests
 from datetime import datetime, timedelta, time
-
 import pytz
-local = pytz.timezone ("Australia/Sydney")
+import settings
 
-IP = "10.0.1.12"
-USER = "gregturner"
-BULB = 3
-
-PRE_WAKEUP_TIME = 15*60 #secs to go from first light to dawn
-LIE_IN_TIME = 10*60 #secs to stay at dawn before moving to daylight
-DAYLIGHT_TRANSITION = 2*60 # secs to transition to daylight
-DAYLIGHT_HOLD = 60*60 # secs to stay at daylight
+local = pytz.timezone (settings.TIMEZONE)
 
 # in n seconds after the last stage is completed, do this.
 STAGES = [
@@ -23,21 +15,21 @@ STAGES = [
         "sat": 255,
         # "transitiontime": 5 #transition time in secs, unlike Philips API
     }),
-    (1, {"on": True, "ct": 400, "bri": 255, "transitiontime": PRE_WAKEUP_TIME-1 }), #dawn
-    (PRE_WAKEUP_TIME + LIE_IN_TIME - 1, {"on": True, "ct": 300, "bri": 255, "transitiontime": DAYLIGHT_TRANSITION }), # daylight
-    (DAYLIGHT_TRANSITION + DAYLIGHT_HOLD, {
+    (1, {"on": True, "ct": 400, "bri": 255, "transitiontime": settings.PRE_WAKEUP_TIME-1 }), #dawn
+    (settings.PRE_WAKEUP_TIME + settings.LIE_IN_TIME - 1, {"on": True, "ct": 300, "bri": 255, "transitiontime": settings.DAYLIGHT_TRANSITION }), # daylight
+    (settings.DAYLIGHT_TRANSITION + settings.DAYLIGHT_HOLD, {
         "on": True,
         "bri": 0,
         "hue": 2048,
         "sat": 255,
-        "transitiontime": 5
+        "transitiontime": settings.TURN_OFF_TIME
     }),
-    (1, {"on": False }),
+    (settings.TURN_OFF_TIME + 1, {"on": False }),
 ]
 
 
-API_URL = "http://%s/api/%s" % (IP, USER)
-STATE_URL = "%s/lights/%s/state" % (API_URL, BULB)
+API_URL = "http://%s/api/%s" % (settings.IP, settings.USER)
+STATE_URL = "%s/lights/%s/state" % (API_URL, settings.BULB)
 SCHEDULE_URL = "%s/schedules" % (API_URL)
 
 
@@ -47,7 +39,7 @@ def schedule(localtime, command_body):
 
     data = {
         "command": {
-            "address": "/api/%s/lights/%s/state" % (USER, BULB),
+            "address": "/api/%s/lights/%s/state" % (settings.USER, settings.BULB),
             "method": "PUT",
             "body": command_body,
         },
@@ -63,7 +55,9 @@ def clear_schedules():
         requests.delete("%s/%s" % (SCHEDULE_URL, id))
 
 def set_one_alarm(awaketime):
-    t = awaketime - timedelta(seconds=PRE_WAKEUP_TIME) #start the transition so that the wakeup time is reached at the target time
+    t = awaketime - timedelta(seconds=settings.PRE_WAKEUP_TIME) #start the transition so that the wakeup time is reached at the target time
+    if t < datetime.now(): #for tests, we want to start now, not in the past.
+        t = datetime.now()+timedelta(seconds=2)
     for t_offset, command in STAGES:
         try:
             command['transitiontime'] = int(command['transitiontime'] * 10)
@@ -96,9 +90,9 @@ def set_ramped_alarms(num_days, origin_time, destination_time):
         set_one_alarm(d)
 
 
-# clear_schedules()
-set_next_alarm(time(5, 15   ))
-# set_one_alarm(datetime.now()+timedelta(seconds=2))
+clear_schedules()
+# set_next_alarm(time(5, 15   ))
+set_one_alarm(datetime.now()+timedelta(seconds=4))
 
 
 # set_ramped_alarms(20, time(7,30), time(6,00))
