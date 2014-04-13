@@ -90,9 +90,9 @@ def set_ramped_alarms(num_days, origin_time, destination_time):
         set_one_alarm(d)
 
 
-clear_schedules()
+# clear_schedules()
 # set_next_alarm(time(5, 15   ))
-set_one_alarm(datetime.now()+timedelta(seconds=4))
+# set_one_alarm(datetime.now()+timedelta(seconds=4))
 
 
 # set_ramped_alarms(20, time(7,30), time(6,00))
