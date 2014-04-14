@@ -47,8 +47,8 @@ def schedule(localtime, command_body):
     }
 
     response = requests.post(SCHEDULE_URL, data=json.dumps(data))
-    if not response.code == 200:
-        print response.content
+    if response.status_code != 200 or response.json()[0].has_key("error"):
+        print response.status_code, response.content
 
 def clear_schedules():
     r = requests.get(SCHEDULE_URL).json()
@@ -87,5 +87,5 @@ def set_ramped_alarms(num_days, origin_time, destination_time):
 
     for n in range(num_days):
         d = day1 + n * diff
-        print n, d
+        # print n, d
         set_one_alarm(d)
