@@ -33,17 +33,19 @@ try:
     stdscr.addstr(row,5,"Hue Alarm Clock")
 
     row += 2
-    stdscr.addstr(row,5,"Space = Toggle light")
-    row += 1
-    stdscr.addstr(row,5,"1     = Relax light")
-    row += 1
-    stdscr.addstr(row,5,"2     = Reading light")
+    stdscr.addstr(row,5,"Space/play/pause = Toggle light")
     row += 2
-    stdscr.addstr(row,5,"Up    = Brighter")
+    stdscr.addstr(row,5,"           1     = Relax light")
     row += 1
-    stdscr.addstr(row,5,"Down  = Dimmer")
+    stdscr.addstr(row,5,"           2     = Sunrise light")
+    row += 1
+    stdscr.addstr(row,5,"           3     = Reading light")
     row += 2
-    stdscr.addstr(row,5,"x     = Exit")
+    stdscr.addstr(row,5,"           Up    = Brighter")
+    row += 1
+    stdscr.addstr(row,5,"           Down  = Dimmer")
+    row += 2
+    stdscr.addstr(row,5,"           x     = Exit")
 
     row += 2
 
@@ -52,7 +54,6 @@ try:
         if char == ord('1'):
             set_state(settings.BULB, {
                 "on": True,
-                # "bri": 224,
                 "ct": 467,
                 "transitiontime": 50
             })
@@ -60,7 +61,13 @@ try:
         elif char == ord('2'):
             set_state(settings.BULB, {
                 "on": True,
-                # "bri": 240,
+                "ct": 400,
+                "transitiontime": 50
+            })
+            display_status("Sunrise light")
+        elif char == ord('3'):
+            set_state(settings.BULB, {
+                "on": True,
                 "ct": 343,
                 "transitiontime": 50
             })
