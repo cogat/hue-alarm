@@ -1,9 +1,9 @@
-#!/usr/bin/python
+
 import curses
 from datetime import datetime, timedelta
 import requests
 from alarm import set_one_alarm
-from hue import toggle, set_state, modify_brightness
+from libhue import toggle, set_state, modify_brightness
 import settings
 
 stdscr = curses.initscr()
@@ -23,9 +23,11 @@ LT  10  RT
 55  56  57
 """
 
-def display_status(text):
+
+def _display_status(text):
     y, x = stdscr.getmaxyx()
     stdscr.addstr(y-1, 5, text.ljust(x-6), curses.A_BOLD)
+
 
 try:
     row = 0
@@ -57,31 +59,31 @@ try:
                 "ct": 467,
                 "transitiontime": 50
             })
-            display_status("Relax light")
+            _display_status("Relax light")
         elif char == ord('2'):
             set_state(settings.BULB, {
                 "on": True,
                 "ct": 400,
                 "transitiontime": 50
             })
-            display_status("Sunrise light")
+            _display_status("Sunrise light")
         elif char == ord('3'):
             set_state(settings.BULB, {
                 "on": True,
                 "ct": 343,
                 "transitiontime": 50
             })
-            display_status("Reading light")
+            _display_status("Reading light")
         elif char == curses.KEY_UP:
             b = modify_brightness(settings.BULB, +26)
-            display_status("Changing brightness to %s" % b)
+            _display_status("Changing brightness to %s" % b)
         elif char == curses.KEY_DOWN:
             b = modify_brightness(settings.BULB, -26)
-            display_status("Changing brightness to %s" % b)
+            _display_status("Changing brightness to %s" % b)
         elif char == curses.KEY_RIGHT:
-            display_status("Right")
+            _display_status("Right")
         elif char == curses.KEY_LEFT:
-            display_status("Left")
+            _display_status("Left")
         elif char == 10:
             set_one_alarm(datetime.now()+timedelta(seconds=4))
         elif char == 32:
@@ -89,7 +91,7 @@ try:
         elif char in [ord('x')]:
             exit()
         else:
-            display_status("Char: %s" % char)
+            _display_status("Char: %s" % char)
         stdscr.refresh()
 
 finally:

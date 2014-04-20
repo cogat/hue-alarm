@@ -1,59 +1,41 @@
-import json
-import requests
-import sys
+#!/usr/bin/env python
+import urllib2
+from libhue import set_state, get_state
 import settings
 
 
-API_URL = "http://%s/api/%s" % (settings.IP, settings.USER)
-LIGHT_URL = "%s/lights/%%s/" % API_URL
-
-
-def request(method, url, data=None):
-    if data:
-        response = method(url, data=json.dumps(data))
+def wait_until_network(internet=False):
+    if internet:
+        ip = "74.125.228.100" #google
     else:
-        response = method(url)
+        ip = settings.IP
 
-    if response.status_code != 200:
-        sys.stderr.write("%s: %s\n" % (response.status_code, response.content))
+    connected = False
 
-    j = response.json()
+    print "Waiting for network connection..."
 
-    try:
-        if j[0].has_key("error"):
-            sys.stderr.write("%s:\n%s\n%s\n" % (response.status_code, response.request, response.content))
-    except KeyError:
-        pass
+    while not connected:
+        try:
+            response=urllib2.urlopen('http://%s' % ip,timeout=1)
+            connected = True
+        except urllib2.URLError as err: pass
 
-    return j
+    print "Connected."
+    return
 
-
-def set_state(light, state):
-    request(requests.put, "%sstate" % (LIGHT_URL % light), state)
-
-
-def toggle(light):
+def show_green_ok():
     """
-    Turn light n on or off.
+    Show an "OK" green, and then turn off.
     """
 
-    status = request(requests.get, LIGHT_URL % light)
+    # print get_state(3)
 
-    if status['state']['on']:
-        set_state(light, {"on": False})
-    else:
-        set_state(light, {"on": True})
+    set_state(settings.BULB, {'on': True, 'bri': 1,  'hue': 15017, 'sat': 138}) #warm white
+    set_state(settings.BULB, {'on': False, 'bri': 1,  'hue': 25718, 'sat': 255, 'transitiontime': 10}) #green then off
 
+    # set_state(settings.BULB, {'on': False, 'transitiontime': 1})
 
-def modify_brightness(light, amount):
-    status = request(requests.get, LIGHT_URL % light)
-    b1 = status['state']['bri']
-    b2 = min(b1 + amount, 255)
-
-    if (b1 >= 0) and (b2 < 0):
-        set_state(light, {"on": False, "bri": 0})
-        b2 = -1
-    else:
-        set_state(light, {"on": True, "bri": b2})
-
-    return b2
+if __name__ == "__main__":
+    wait_until_network()
+    show_green_ok()
+    # start_ui()
