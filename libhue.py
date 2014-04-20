@@ -1,4 +1,5 @@
 import json
+from threading import Timer
 import requests
 import sys
 import settings
@@ -7,6 +8,7 @@ import settings
 API_URL = "http://%s/api/%s" % (settings.IP, settings.USER)
 LIGHT_URL = "%s/lights/%%s/" % API_URL
 
+timer = None
 
 def request(method, url, data=None):
     if data:
@@ -28,11 +30,24 @@ def request(method, url, data=None):
     return j
 
 
-def set_state(light, state):
+def set_state(light, state, delay=0):
     """
     e.g. set_state(3, {'on': True })
+    pass a delay parameter in seconds to execute the command later.
     """
-    request(requests.put, "%sstate" % (LIGHT_URL % light), state)
+    global timer
+
+    def _fn():
+        request(requests.put, "%sstate" % (LIGHT_URL % light), state)
+
+    if delay:
+        if timer:
+            timer.cancel()
+        timer = Timer(delay, _fn)
+        timer.start()
+    else:
+        _fn()
+
 
 
 def get_state(light):
@@ -43,7 +58,7 @@ def toggle(light):
     Turn light n on or off.
     """
 
-    state = get_state()
+    state = get_state(light)
 
     if state['on']:
         set_state(light, {"on": False})
@@ -52,14 +67,23 @@ def toggle(light):
 
 
 def modify_brightness(light, amount):
-    state = request(requests.get, LIGHT_URL % light)
+    state = get_state(light)
     b1 = state['bri']
-    b2 = min(b1 + amount, 255)
+    b2 = max(min(b1 + amount, 255), 0)
 
-    if (b1 >= 0) and (b2 < 0):
-        set_state(light, {"on": False, "bri": 0})
-        b2 = -1
+    if (b1 >= 0) and (b2 == 0):
+        set_state(light, {"on": False})
+        b2 = 0
     else:
         set_state(light, {"on": True, "bri": b2})
+
+    return b2
+
+def modify_temperature(light, amount):
+    state = get_state(light)
+    b1 = state['ct']
+    b2 = max(min(b1 + amount, 500), 153)
+
+    set_state(light, {"on": True, "ct": b2})
 
     return b2

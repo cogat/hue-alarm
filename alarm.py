@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, time
 import pytz
 import settings
 
-local = pytz.timezone (settings.TIMEZONE)
+local = pytz.timezone(settings.TIMEZONE)
 
 # in n seconds after the last stage is completed, do this.
 STAGES = [
