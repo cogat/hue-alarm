@@ -18,7 +18,7 @@ def wait_until_network(internet=False):
 
     while not connected:
         try:
-            response=urllib2.urlopen('http://%s' % ip,timeout=1)
+            response=urllib2.urlopen('http://%s' % ip, timeout=1)
             connected = True
         except urllib2.URLError as err: pass
 

@@ -16,3 +16,4 @@ settings.py
 
 audio/
 *.mp3
+unused/
