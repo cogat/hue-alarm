@@ -4,7 +4,7 @@ There are 2 runnable parts:
 
 2) hue.py, a UI for controlling the light manually
 
-To install, edit /etc/rc.local and add:
+To install, test both parts run independenly, then edit /etc/rc.local to add:
 
 cd /home/pi/hue/
 . ./env/bin/activate

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import urllib2
-from libhue import set_state, get_state
 from presets import show_green_ok
 import settings
 from ui import start_ui

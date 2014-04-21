@@ -9,13 +9,9 @@ from threading import Timer
 from apscheduler.scheduler import Scheduler
 
 import gdata.calendar.service as GServ
-import os
-import random
 from datetime import datetime, timedelta
 from dateutil import parser
-import pygame
 import pytz
-import subprocess
 from hue import wait_until_network
 from presets import alarm_cycle
 import settings
