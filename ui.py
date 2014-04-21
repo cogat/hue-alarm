@@ -11,27 +11,27 @@ turnoff_time = None
 def draw_menu(stdscr, col, row):
         stdscr.addstr(row,col,"Hue Control")
         row += 2
-        stdscr.addstr(row,col,"           Keys:")
+        stdscr.addstr(row,col,"Keys:")
         row += 2
-        stdscr.addstr(row,col,"                  1 = Relax light")
+        stdscr.addstr(row,col,"                 1 = Relax light")
         row += 1
-        stdscr.addstr(row,col,"                  2 = Sunrise light")
+        stdscr.addstr(row,col,"                 2 = Sunrise light")
         row += 1
-        stdscr.addstr(row,col,"                  3 = Reading light")
+        stdscr.addstr(row,col,"                 3 = Reading light")
         row += 2
-        stdscr.addstr(row,col,"          ] (Vol +) = Brighter")
+        stdscr.addstr(row,col,"         ] (Vol +) = Brighter")
         row += 1
-        stdscr.addstr(row,col,"          [ (Vol -) = Dimmer")
+        stdscr.addstr(row,col,"         [ (Vol -) = Dimmer")
         row += 1
-        stdscr.addstr(row,col,"              Left  = Cooler")
+        stdscr.addstr(row,col,"             Left  = Cooler")
         row += 1
-        stdscr.addstr(row,col,"              Right = Warmer")
+        stdscr.addstr(row,col,"             Right = Warmer")
         row += 2
-        stdscr.addstr(row,col,"            0 (10+) = Turn off in +10 minutes")
+        stdscr.addstr(row,col,"           0 (10+) = Fade and turn off in +10 minutes")
         row += 1
-        stdscr.addstr(row,col," Space (play/pause) = Toggle light on/off")
+        stdscr.addstr(row,col,"Space (play/pause) = Toggle light on/off")
         row += 2
-        stdscr.addstr(row,col,"                  x = Exit")
+        stdscr.addstr(row,col,"                 x = Exit")
         row += 2
 
 
@@ -107,7 +107,7 @@ def start_ui():
 
                 time_to_go = (turnoff_time - datetime.now()).total_seconds()
                 turn_off_after(settings.BULB, time_to_go)
-                _display_status("Turning off in %s minutes." % round(time_to_go))
+                _display_status("Turning off in %s seconds." % round(time_to_go))
                 def _clear_clock():
                     global turnoff_time
                     turnoff_time = None

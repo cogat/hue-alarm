@@ -1,4 +1,5 @@
 from libhue import set_state
+import settings
 
 PRESETS = {
     'off': {
@@ -7,17 +8,32 @@ PRESETS = {
     'relax': {
         "on": True,
         "ct": 467,
-        "transitiontime": 50
     },
     'sunrise': {
         "on": True,
         "ct": 400,
-        "transitiontime": 50
     },
     'reading': {
         "on": True,
         "ct": 343,
     },
+    'first_light': {
+        "on": True, # first light
+        "bri": 0,
+        "hue": 2048,
+        "sat": 255,
+        # "transitiontime": 5 #transition time in secs, unlike Philips API
+    },
+    'dawn': {
+        "on": True,
+        "ct": 400,
+        "bri": 255
+    },
+    'daylight': {
+        "on": True,
+        "ct": 300,
+        "bri": 255
+    }
 }
 
 
@@ -41,3 +57,21 @@ def turn_off_after(light, seconds):
     # fade down in seconds * 0.33
     # turn off.
     set_state(light, {'on': False, 'transitiontime': int(round(seconds * 0.33 * 10)) }, delay=seconds * 0.66)
+
+
+def alarm_cycle(bulb):
+    first_light = PRESETS.get("first_light")
+    dawn = PRESETS.get("dawn")
+    daylight = PRESETS.get("daylight")
+
+    set_state(bulb, first_light)
+    dawn.update({'transitiontime': int(settings.PRE_WAKEUP_TIME * 10) })
+    set_state(bulb, dawn)
+    daylight.update({'transitiontime': int(settings.DAYLIGHT_TRANSITION * 10)})
+    set_state(bulb, daylight, delay=settings.PRE_WAKEUP_TIME)
+    #wait for lie-in, then turn off
+    set_state(
+        bulb,
+        {'on': False, 'transitiontime': settings.TURN_OFF_TIME * 10},
+        delay=settings.PRE_WAKEUP_TIME + settings.DAYLIGHT_TRANSITION + settings.LIE_IN_TIME
+    )

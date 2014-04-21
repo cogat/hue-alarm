@@ -13,3 +13,6 @@ env/
 .env
 
 settings.py
+
+audio/
+*.mp3

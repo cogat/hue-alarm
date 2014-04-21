@@ -1,2 +1,6 @@
 requests
 pytz
+gdata
+apscheduler
+pyfeed
+python-dateutil
