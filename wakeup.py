@@ -24,7 +24,6 @@ CHECK_CALENDAR_EVERY = 60*10 #secs
 
 
 scheduler = Scheduler(standalone=True)
-added_times = set()
 
 # set up a google calendar connection
 calendar_service = GServ.CalendarService()
@@ -36,26 +35,28 @@ calendar_service.ProgrammaticLogin()
 local = pytz.timezone(settings.TIMEZONE)
 
 def check_calendar():
-    global added_times
-    print 'Full text query for events on %s' % settings.CALENDAR_NAME
-
+    print 'Query for "%s" events on %s' % (settings.CALENDAR_QUERY, settings.CALENDAR_NAME)
 
     query = GServ.CalendarEventQuery(user=settings.CALENDAR_NAME, visibility="private", projection='full', text_query=settings.CALENDAR_QUERY)
-    query.start_min = local.localize(datetime.now() + timedelta(minutes=-15)).isoformat()
+    query.start_min = local.localize(datetime.now()).isoformat()
     query.start_max = local.localize(datetime.now() + timedelta(days=7)).isoformat()
     query.singleevents = 'true'  #  enables creation of repeating events
 
     feed = calendar_service.CalendarQuery(query)
     local_now = local.localize(datetime.now())
 
-    for i, an_event in enumerate(feed.entry):
-        for when in an_event.when:
-            t = parser.parse(when.start_time) - timedelta(seconds=settings.PRE_WAKEUP_TIME)
-            if (t > local_now) and (t not in added_times):
-                print "Scheduling alarm for %s ('%s') (starting %s)" % (when.start_time, an_event.title.text, t)
-                added_times.add(t) #TODO clean up added_times once a year or so :)
-                scheduler.add_cron_job(do_alarm, month=t.month, day=t.day, hour=t.hour, minute=t.minute, second=t.second)
+    #clear out current schedule of alarms - just in case any are deleted or changed
+    try:
+        scheduler.unschedule_func(do_alarm)
+    except KeyError:
+        pass
 
+    for i, event in enumerate(feed.entry):
+        for when in event.when:
+            t = parser.parse(when.start_time) - timedelta(seconds=settings.PRE_WAKEUP_TIME)
+            if t > local_now:
+                print "Scheduled alarm for %s ('%s') (starting %s)" % (when.start_time, event.title.text, t)
+                scheduler.add_cron_job(do_alarm, month=t.month, day=t.day, hour=t.hour, minute=t.minute, second=t.second)
 
 def do_alarm():
     local_now = local.localize(datetime.now())
