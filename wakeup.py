@@ -24,10 +24,7 @@ import logging
 logging.basicConfig()
 
 
-if settings.DEBUG:
-    CHECK_CALENDAR_EVERY = 5 #secs
-else:
-    CHECK_CALENDAR_EVERY = 60*10 #secs
+CHECK_CALENDAR_EVERY = 60*10 #secs
 
 
 scheduler = Scheduler(standalone=True)
@@ -59,7 +56,7 @@ def check_calendar():
         for when in an_event.when:
             t = parser.parse(when.start_time) - timedelta(seconds=settings.PRE_WAKEUP_TIME)
             if (t > local_now) and (t not in added_times):
-                print "Adding alarm for %s ('%s')" % (when.start_time, an_event.title.text)
+                print "Scheduling alarm for %s ('%s') (starting %s)" % (when.start_time, an_event.title.text, t)
                 added_times.add(t) #TODO clean up added_times once a year or so :)
                 scheduler.add_cron_job(do_alarm, month=t.month, day=t.day, hour=t.hour, minute=t.minute, second=t.second)
 
@@ -93,6 +90,7 @@ def do_alarm():
 if __name__ == '__main__':
     wait_until_network()
     # do_alarm()
+    check_calendar()
 
     scheduler.add_interval_job(check_calendar, seconds=CHECK_CALENDAR_EVERY)  #  define refresh rate.
     scheduler.start()                                     #  runs the program indefinitely on an interval of x seconds

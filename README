@@ -1,0 +1,12 @@
+There are 2 runnable parts:
+
+1) wakeup.py, a background process that checks a google calendar and schedules alarms
+
+2) hue.py, a UI for controlling the light manually
+
+To install, edit /etc/rc.local and add:
+
+cd /home/pi/hue/
+. ./env/bin/activate
+screen -dmS wakeup ./wakeup.py
+screen -S hue ./hue.py

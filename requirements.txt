@@ -1,6 +1,5 @@
 requests
-pytz
-gdata
-apscheduler
-pyfeed
-python-dateutil
+pytz==2014.2
+gdata==2.0.18
+apscheduler==2.1.2
+python-dateutil==2.2
