@@ -30,7 +30,6 @@ calendar_service = GServ.CalendarService()
 calendar_service.email = settings.G_LOGIN
 calendar_service.password = settings.G_PASSWORD
 calendar_service.source = 'RPi Alarm Clock'
-calendar_service.ProgrammaticLogin()
 
 local = pytz.timezone(settings.TIMEZONE)
 
@@ -86,6 +85,8 @@ def do_alarm():
 
 if __name__ == '__main__':
     wait_until_network()
+    calendar_service.ProgrammaticLogin()
+
     # do_alarm()
     check_calendar()
 

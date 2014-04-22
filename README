@@ -10,3 +10,8 @@ cd /home/pi/hue/
 . ./env/bin/activate
 screen -dmS wakeup ./wakeup.py
 screen -S hue ./hue.py
+
+
+You can 'peep in' on these by running
+sudo screen -x hue
+sudo screen -x wakeup
