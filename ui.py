@@ -19,9 +19,9 @@ def draw_menu(stdscr, col, row):
         row += 1
         stdscr.addstr(row,col,"                 3 = Reading light")
         row += 2
-        stdscr.addstr(row,col,"         ] (Vol +) = Brighter")
+        stdscr.addstr(row,col,"                Up = Brighter")
         row += 1
-        stdscr.addstr(row,col,"         [ (Vol -) = Dimmer")
+        stdscr.addstr(row,col,"              Down = Dimmer")
         row += 1
         stdscr.addstr(row,col,"             Left  = Cooler")
         row += 1
@@ -82,10 +82,10 @@ def start_ui():
             elif char == '3':
                 show_preset('reading', settings.BULB)
                 _display_status("Reading light")
-            elif charcode == 91:
+            elif charcode == curses.KEY_UP:
                 b = modify_brightness(settings.BULB, -26)
                 _display_status("Changing brightness to %s" % b)
-            elif charcode == 93:
+            elif charcode == curses.KEY_DOWN:
                 b = modify_brightness(settings.BULB, +26)
                 _display_status("Changing brightness to %s" % b)
             elif charcode == curses.KEY_LEFT:
