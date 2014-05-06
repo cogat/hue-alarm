@@ -30,19 +30,19 @@ def display_message(msg, colour=lcd.GREEN):
 
 def press_up():
     b = [modify_brightness(B, +26) for B in settings.BULBS]
-    display_message("Brightness: %s" % b)
+    display_message("Brightness:\n%s" % b)
 
 def press_down():
     b = [modify_brightness(B, -26) for B in settings.BULBS]
-    display_message("Brightness: %s" % b)
+    display_message("Brightness:\n%s" % b)
 
 def press_left():
     t = [modify_temperature(B, -35) for B in settings.BULBS]
-    display_message("Changing temp\nto %s" % t)
+    display_message("Colour temp:\n%s" % t)
 
 def press_right():
     t = [modify_temperature(B, +35) for B in settings.BULBS]
-    display_message("Changing temp\nto %s" % t)
+    display_message("Colour temp:\n%s" % t)
 
 TURNOFF_TIME = None
 
@@ -60,7 +60,7 @@ def press_select():
 
     time_to_go = (TURNOFF_TIME - datetime.now()).total_seconds()
     [turn_off_after(B, time_to_go) for B in settings.BULBS]
-    display_message("Turning off in %s seconds." % round(time_to_go))
+    display_message("Turning off in\n%s seconds." % round(time_to_go))
     def _clear_clock():
         global TURNOFF_TIME
         TURNOFF_TIME = None
