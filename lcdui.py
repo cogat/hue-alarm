@@ -82,7 +82,12 @@ def start_ui():
     display_message("Greg's Alarm\nIP: %s" % host_ip)
     prev = None
     while True:
+        any_button_pressed = False
         for b in BUTTONS:
-            if lcd.buttonPressed(b[0]) and b is not prev:
-                b[1]()
-                prev = b
+            if lcd.buttonPressed(b[0]):
+                any_button_pressed = True
+                if b is not prev:
+                    b[1]()
+                    prev = b
+            if not any_button_pressed:
+                prev = None
