@@ -62,7 +62,7 @@ def do_alarm():
     local_now = local.localize(datetime.now())
     print "%s: ALARM" % local_now
 
-    [alarm_cycle(settings.B) for B in settings.BULBS]
+    [alarm_cycle(B) for B in settings.BULBS]
 
     # #play a random mp3 file
     # fn = random.choice(os.listdir(settings.AUDIO_PATH))
