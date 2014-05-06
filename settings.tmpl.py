@@ -2,7 +2,7 @@ from os import path
 
 IP = "10.0.1.12"
 USER = "gregturner"
-BULB = 3
+BULBS = [1, 3]
 TIMEZONE = "Australia/Sydney"
 
 DEBUG = True #mostly, shorten animations

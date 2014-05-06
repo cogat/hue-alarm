@@ -1,4 +1,4 @@
-from libhue import set_state
+from lib.libhue import set_state
 import settings
 
 PRESETS = {

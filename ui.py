@@ -1,10 +1,11 @@
-
 import curses
 from datetime import datetime, timedelta
 from threading import Timer
-from libhue import toggle, set_state, modify_brightness, modify_temperature
+
+from lib.libhue import toggle, modify_brightness, modify_temperature
 from presets import *
 import settings
+
 
 turnoff_time = None
 
@@ -74,28 +75,28 @@ def start_ui():
                 char = None
 
             if char == '1':
-                show_preset('relax', settings.BULB)
+                [show_preset('relax', B) for B in settings.BULBS]
                 _display_status("Relax light")
             elif char == '2':
-                show_preset('sunrise', settings.BULB)
+                [show_preset('sunrise', B) for B in settings.BULBS]
                 _display_status("Sunrise light")
             elif char == '3':
-                show_preset('reading', settings.BULB)
+                [show_preset('reading', B) for B in settings.BULBS]
                 _display_status("Reading light")
             elif charcode == curses.KEY_UP:
-                b = modify_brightness(settings.BULB, -26)
+                b = [modify_brightness(B, +26) for B in settings.BULBS]
                 _display_status("Changing brightness to %s" % b)
             elif charcode == curses.KEY_DOWN:
-                b = modify_brightness(settings.BULB, +26)
+                b = [modify_brightness(B, -26) for B in settings.BULBS]
                 _display_status("Changing brightness to %s" % b)
             elif charcode == curses.KEY_LEFT:
-                t = modify_temperature(settings.BULB, -35)
+                t = [modify_temperature(B, -35) for B in settings.BULBS]
                 _display_status("Changing temperature to %s" % t)
             elif charcode == curses.KEY_RIGHT:
-                t = modify_temperature(settings.BULB, +35)
+                t = [modify_temperature(B, +35) for B in settings.BULBS]
                 _display_status("Changing temperature to %s" % t)
             elif char == '0':
-                set_state(settings.BULB, {'on': True })
+                [set_state(B, {'on': True }) for B in settings.BULBS]
                 if settings.DEBUG:
                     diff = timedelta(seconds=10)
                 else:
@@ -106,7 +107,7 @@ def start_ui():
                     turnoff_time = datetime.now() + diff
 
                 time_to_go = (turnoff_time - datetime.now()).total_seconds()
-                turn_off_after(settings.BULB, time_to_go)
+                [turn_off_after(B, time_to_go) for B in settings.BULBS]
                 _display_status("Turning off in %s seconds." % round(time_to_go))
                 def _clear_clock():
                     global turnoff_time
@@ -114,10 +115,10 @@ def start_ui():
                 t = Timer(time_to_go, _clear_clock)
                 t.start()
             elif char == ' ':
-                toggle(settings.BULB)
+                [toggle(B) for B in settings.BULBS]
                 _display_status("Toggle light")
             elif charcode in [ord('x')]:
-                show_preset('off', settings.BULB)
+                [show_preset('off', B) for B in settings.BULBS]
                 exit()
             else:
                 _display_status("Char: %s" % charcode)

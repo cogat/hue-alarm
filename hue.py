@@ -2,7 +2,7 @@
 import urllib2
 from presets import show_green_ok
 import settings
-from ui import start_ui
+from lcdui import start_ui
 
 
 def wait_until_network(internet=False):
@@ -26,5 +26,5 @@ def wait_until_network(internet=False):
 
 if __name__ == "__main__":
     wait_until_network()
-    show_green_ok(settings.BULB)
+    [show_green_ok(B) for B in settings.BULBS]
     start_ui()
