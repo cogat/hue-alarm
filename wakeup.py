@@ -18,8 +18,10 @@ import settings
 import logging
 logging.basicConfig()
 
-
-CHECK_CALENDAR_EVERY = 60*10 #secs
+if settings.DEBUG:
+    CHECK_CALENDAR_EVERY = 10 #secs
+else:
+    CHECK_CALENDAR_EVERY = 60*10 #secs
 
 
 scheduler = Scheduler()
