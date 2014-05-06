@@ -60,7 +60,7 @@ def press_select():
 
     time_to_go = (TURNOFF_TIME - datetime.now()).total_seconds()
     [turn_off_after(B, time_to_go) for B in settings.BULBS]
-    display_message("Turning off in\n%s seconds." % round(time_to_go))
+    display_message("Turning off in\n%s minutes." % int(round(time_to_go/60)))
     def _clear_clock():
         global TURNOFF_TIME
         TURNOFF_TIME = None
@@ -89,5 +89,5 @@ def start_ui():
                 if b is not prev:
                     b[1]()
                     prev = b
-            if not any_button_pressed:
-                prev = None
+        if not any_button_pressed:
+            prev = None
