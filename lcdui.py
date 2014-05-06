@@ -75,11 +75,14 @@ BUTTONS = [
     (lcd.RIGHT, press_right),
     (lcd.SELECT, press_select),
 ]
+
 def start_ui():
     host_ip = get_ip_address()
     # short_ip = ".".join(host_ip.split(".")[-2:])
     display_message("Greg's Alarm\nIP: %s" % host_ip)
+    prev = None
     while True:
         for b in BUTTONS:
-            if lcd.buttonPressed(b[0]):
+            if lcd.buttonPressed(b[0]) and b is not prev:
                 b[1]()
+                prev = b
