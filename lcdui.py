@@ -2,6 +2,7 @@
 from threading import Timer
 from datetime import timedelta, datetime
 from lib.libhue import modify_temperature, modify_brightness, set_state
+from lib.net import get_ip_address
 from presets import turn_off_after
 import settings
 
@@ -10,10 +11,6 @@ try:
 except ImportError:
     from lib.Adafruit_CharLCDPlate_Fallback import Adafruit_CharLCDPlate as LCD
 
-import socket
-
-host_name = socket.gethostname()
-host_ip = socket.gethostbyname(host_name)
 
 # Initialize the LCD plate.  Should auto-detect correct I2C bus.  If not,
 # pass '0' for early 256 MB Model B boards or '1' for all later versions
@@ -79,8 +76,9 @@ BUTTONS = [
     (lcd.SELECT, press_select),
 ]
 def start_ui():
-    short_ip = ".".join(host_ip.split(".")[-2:])
-    display_message("Greg's Alarm\nIP: -%s" % short_ip)
+    host_ip = get_ip_address()
+    # short_ip = ".".join(host_ip.split(".")[-2:])
+    display_message("Greg's Alarm\nIP: %s" % host_ip)
     while True:
         for b in BUTTONS:
             if lcd.buttonPressed(b[0]):
