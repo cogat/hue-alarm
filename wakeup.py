@@ -5,14 +5,13 @@
     and schedule a wake sequence.
     Adapted from Simple Google Calendar Alarm Clock by Bart Bania
 """
-from threading import Timer
 from apscheduler.scheduler import Scheduler
 
 import gdata.calendar.service as GServ
 from datetime import datetime, timedelta
 from dateutil import parser
 import pytz
-from hue import wait_until_network
+from lib.net import wait_until_network
 from presets import alarm_cycle
 import settings
 
@@ -23,7 +22,7 @@ logging.basicConfig()
 CHECK_CALENDAR_EVERY = 60*10 #secs
 
 
-scheduler = Scheduler(standalone=True)
+scheduler = Scheduler()
 
 # set up a google calendar connection
 calendar_service = GServ.CalendarService()
@@ -83,12 +82,17 @@ def do_alarm():
     #
     # player.wait()
 
-if __name__ == '__main__':
-    wait_until_network()
+def start_calendar_scheduler():
     calendar_service.ProgrammaticLogin()
 
     # do_alarm()
     check_calendar()
-
     scheduler.add_interval_job(check_calendar, seconds=CHECK_CALENDAR_EVERY)  #  define refresh rate.
     scheduler.start()                                     #  runs the program indefinitely on an interval of x seconds
+
+
+if __name__ == '__main__':
+    wait_until_network()
+    start_calendar_scheduler()
+    while True:
+        pass

@@ -1,30 +1,16 @@
 #!/usr/bin/env python
 import urllib2
+from lib.net import wait_until_network
 from presets import show_green_ok
 import settings
 from lcdui import start_ui
+from wakeup import start_calendar_scheduler
 
-
-def wait_until_network(internet=False):
-    if internet:
-        ip = "74.125.228.100" #google
-    else:
-        ip = settings.IP
-
-    connected = False
-
-    print "Waiting for network connection..."
-
-    while not connected:
-        try:
-            response=urllib2.urlopen('http://%s' % ip, timeout=1)
-            connected = True
-        except urllib2.URLError as err: pass
-
-    print "Connected."
-    return
 
 if __name__ == "__main__":
     wait_until_network()
     [show_green_ok(B) for B in settings.BULBS]
+
+    start_calendar_scheduler()
+
     start_ui()
