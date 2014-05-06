@@ -22,6 +22,7 @@ lcd = LCD()
 BACKLIGHT_TIMER = None
 
 def display_message(msg, colour=lcd.GREEN):
+    global BACKLIGHT_TIMER
     lcd.clear()
     lcd.backlight(colour)
     lcd.message(msg)
@@ -46,25 +47,26 @@ def press_right():
     t = [modify_temperature(B, +35) for B in settings.BULBS]
     display_message("Changing temp\nto %s" % t)
 
-turnoff_time = None
+TURNOFF_TIME = None
 
 def press_select():
+    global TURNOFF_TIME
     [set_state(B, {'on': True }) for B in settings.BULBS]
     if settings.DEBUG:
         diff = timedelta(seconds=10)
     else:
         diff = timedelta(minutes=10)
-    if turnoff_time:
-        turnoff_time += diff
+    if TURNOFF_TIME:
+        TURNOFF_TIME += diff
     else:
-        turnoff_time = datetime.now() + diff
+        TURNOFF_TIME = datetime.now() + diff
 
-    time_to_go = (turnoff_time - datetime.now()).total_seconds()
+    time_to_go = (TURNOFF_TIME - datetime.now()).total_seconds()
     [turn_off_after(B, time_to_go) for B in settings.BULBS]
     display_message("Turning off in %s seconds." % round(time_to_go))
     def _clear_clock():
-        global turnoff_time
-        turnoff_time = None
+        global TURNOFF_TIME
+        TURNOFF_TIME = None
     t = Timer(time_to_go, _clear_clock)
     t.start()
 
@@ -78,7 +80,7 @@ BUTTONS = [
 ]
 def start_ui():
     short_ip = ".".join(host_ip.split(".")[-2:])
-    display_message("Greg's Alarm\nip: ...%s" % short_ip)
+    display_message("Greg's Alarm\nIP: -%s" % short_ip)
     while True:
         for b in BUTTONS:
             if lcd.buttonPressed(b[0]):
