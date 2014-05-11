@@ -20,7 +20,7 @@ except ImportError:
     lcd = None
 
 def _t(s, l):
-    return s.ljust(l)[:l]
+    return unicode(s).ljust(l)[:l]
 
 # ╔════════════════╗
 # ║20:08 a06:00 10m║
@@ -52,7 +52,7 @@ def display_message(msg, colour=getattr(lcd, "GREEN", None)):
 
 class Status(object):
     def __init__(self):
-        self.next_alarm = ""
+        self.next_alarm = None
         self.turn_off = 0
         self.brightness = 0
         self.weather = ""
@@ -72,7 +72,7 @@ class Status(object):
             else:
                 formatted_turn_off = ""
 
-            line1 = "%s %s %s" % (_t(formatted_time,5), _t(self.next_alarm, 5), _t(formatted_turn_off, 3))
+            line1 = "%s a%s %s" % (_t(formatted_time,5), _t(self.next_alarm.time(), 5), _t(formatted_turn_off, 3))
         if line2 is None:
             formatted_brightness = unicode(int(round(self.brightness * 100)))
             line2 = "%s%% %s" % (_t(formatted_brightness, 3), _t(self.weather, 11))

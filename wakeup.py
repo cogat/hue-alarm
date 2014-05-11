@@ -11,6 +11,7 @@ import gdata.calendar.service as GServ
 from datetime import datetime, timedelta
 from dateutil import parser
 import pytz
+from lcdui import STATUS
 from lib.net import wait_until_network
 from presets import alarm_cycle
 import settings
@@ -35,7 +36,7 @@ calendar_service.source = 'RPi Alarm Clock'
 local = pytz.timezone(settings.TIMEZONE)
 
 def check_calendar():
-    print 'Query for "%s" events on %s' % (settings.CALENDAR_QUERY, settings.CALENDAR_NAME)
+    # print 'Query for "%s" events on %s' % (settings.CALENDAR_QUERY, settings.CALENDAR_NAME)
 
     query = GServ.CalendarEventQuery(user=settings.CALENDAR_NAME, visibility="private", projection='full', text_query=settings.CALENDAR_QUERY)
     query.start_min = local.localize(datetime.now()).isoformat()
@@ -53,14 +54,18 @@ def check_calendar():
 
     for i, event in enumerate(feed.entry):
         for when in event.when:
-            t = parser.parse(when.start_time) - timedelta(seconds=settings.PRE_WAKEUP_TIME)
+            parse_when = parser.parse(when.start_time)
+            t = parse_when - timedelta(seconds=settings.PRE_WAKEUP_TIME)
             if t > local_now:
-                print "Scheduled alarm for %s ('%s') (starting %s)" % (when.start_time, event.title.text, t)
+                if (STATUS.next_alarm is None) or (parse_when < STATUS.next_alarm):
+                    STATUS.next_alarm = parse_when
+                # print "Scheduled alarm for %s ('%s') (starting %s)" % (when.start_time, event.title.text, t)
                 scheduler.add_cron_job(do_alarm, month=t.month, day=t.day, hour=t.hour, minute=t.minute, second=t.second)
 
 def do_alarm():
-    local_now = local.localize(datetime.now())
-    print "%s: ALARM" % local_now
+    STATUS.next_alarm = None
+    # local_now = local.localize(datetime.now())
+    # print "%s: ALARM" % local_now
 
     [alarm_cycle(B) for B in settings.BULBS]
 
