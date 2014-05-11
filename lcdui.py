@@ -177,7 +177,7 @@ def start_ui():
                 adjust_turnoff(-5)
             elif char == ' ':
                 [toggle(B) for B in settings.BULBS]
-            if charcode:
+            if charcode and char != '9':
                 STATUS.display()
 
             stdscr.refresh()
