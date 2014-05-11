@@ -26,3 +26,5 @@ CALENDAR_QUERY = "wake" # set any word you like to be sought
 
 AUDIO_PATH = path.abspath("~/audio") # set your mp3 files path here
 MAX_VOLUME = 128
+
+WEATHER_REGION = 'ASXX0112:1'
