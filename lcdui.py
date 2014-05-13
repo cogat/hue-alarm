@@ -39,14 +39,14 @@ def display_message(msg, colour="GREEN"):
         BACKLIGHT_TIMER = Timer(2, lcd.backlight, (lcd.OFF, ))
         BACKLIGHT_TIMER.start()
 
-    lines = msg.split("\n")[:2]
-    if len(lines) < 2:
-        lines.append("")
-
-    stdscr.addstr(0, 0, "-"*18)
-    for i, line in enumerate(lines):
-        stdscr.addstr(i+1, 0, "|%s|" % _t(line,16))
-    stdscr.addstr(3, 0, "-"*18)
+    if stdscr:
+        lines = msg.split("\n")[:2]
+        if len(lines) < 2:
+            lines.append("")
+        stdscr.addstr(0, 0, "-"*18)
+        for i, line in enumerate(lines):
+            stdscr.addstr(i+1, 0, "|%s|" % _t(line,16))
+        stdscr.addstr(3, 0, "-"*18)
 
 
 
