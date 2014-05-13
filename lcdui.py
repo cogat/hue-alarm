@@ -27,12 +27,12 @@ def _t(s, l):
 # ║b100% Showers   ║
 # ╚════════════════╝
 BACKLIGHT_TIMER = None
-def display_message(msg, colour=getattr(lcd, "GREEN", None)):
+def display_message(msg, colour="GREEN"):
     global stdscr
     if lcd:
         global BACKLIGHT_TIMER
         lcd.clear()
-        lcd.backlight(colour)
+        lcd.backlight(getattr(lcd, colour))
         lcd.message(msg)
         if BACKLIGHT_TIMER and BACKLIGHT_TIMER.is_alive():
             BACKLIGHT_TIMER.cancel()
@@ -57,7 +57,7 @@ class Status(object):
         self.brightness = 0
         self.weather = ""
 
-    def display(self, line1=None, line2=None):
+    def display(self, line1=None, line2=None, colour="GREEN"):
 
         if line1 is None:
             formatted_time = unicode(datetime.now().time())
@@ -77,7 +77,6 @@ class Status(object):
             formatted_brightness = unicode(int(round(self.brightness * 100)))
             line2 = "%s%% %s" % (_t(formatted_brightness, 3), _t(self.weather, 11))
 
-        colour=getattr(lcd, "GREEN", None)
         display_message("%s\n%s" % (line1, line2), colour)
 
 STATUS = Status()
@@ -141,7 +140,7 @@ def start_ui():
     """
 
     host_ip = get_ip_address()
-    STATUS.display(line2="IP: %s" % host_ip)
+    STATUS.display(line2="IP: %s" % host_ip, colour="VIOLET")
 
     try:
 
