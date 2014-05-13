@@ -139,9 +139,6 @@ def start_ui():
     55  56  57
     """
 
-    host_ip = get_ip_address()
-    STATUS.display(line2="IP: %s" % host_ip, colour="VIOLET")
-
     try:
 
         while True:

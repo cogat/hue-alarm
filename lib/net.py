@@ -22,6 +22,5 @@ def wait_until_network(internet=False):
             connected = True
         except urllib2.URLError as err: pass
 
-    print "Connected."
     return
 

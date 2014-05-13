@@ -56,6 +56,7 @@ def turn_off_after(light, seconds):
     # do nothing for seconds * 0.66
     # fade down in seconds * 0.33
     # turn off.
+    seconds = max(0, seconds)
     set_state(light, {'on': False, 'transitiontime': int(round(seconds * 0.33 * 10)) }, delay=seconds * 0.66)
 
 
