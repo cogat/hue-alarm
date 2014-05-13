@@ -9,7 +9,7 @@ from wakeup import start_calendar_scheduler
 
 if __name__ == "__main__":
     display_message("waiting for\nnetwork...", "RED")
-    wait_until_network()
+    wait_until_network(internet=True)
     [show_green_ok(B) for B in settings.BULBS]
 
     start_calendar_scheduler()

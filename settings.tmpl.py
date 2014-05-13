@@ -1,6 +1,6 @@
 from os import path
 
-IP = "10.0.1.12"
+IP = "10.0.1.2"
 USER = "gregturner"
 BULBS = [1, 3]
 TIMEZONE = "Australia/Sydney"
