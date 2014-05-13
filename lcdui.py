@@ -170,10 +170,10 @@ def start_ui():
                 adjust_temperature(-35)
             elif charcode == curses.KEY_RIGHT:
                 adjust_temperature(35)
-            elif char == "]":
-                adjust_turnoff(5)
-            elif char == "[":
+            elif charcode == 91:
                 adjust_turnoff(-5)
+            elif charcode == 93:
+                adjust_turnoff(5)
             elif char == ' ':
                 [toggle(B) for B in settings.BULBS]
             if charcode and char != '9':
