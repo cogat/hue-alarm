@@ -36,7 +36,7 @@ calendar_service.source = 'RPi Alarm Clock'
 local = pytz.timezone(settings.TIMEZONE)
 
 def check_calendar():
-    # print 'Query for "%s" events on %s' % (settings.CALENDAR_QUERY, settings.CALENDAR_NAME)
+    print 'Query for "%s" events on %s' % (settings.CALENDAR_QUERY, settings.CALENDAR_NAME)
 
     query = GServ.CalendarEventQuery(user=settings.CALENDAR_NAME, visibility="private", projection='full', text_query=settings.CALENDAR_QUERY)
     query.start_min = local.localize(datetime.now()).isoformat()
@@ -59,7 +59,7 @@ def check_calendar():
             if t > local_now:
                 if (STATUS.next_alarm is None) or (parse_when < STATUS.next_alarm):
                     STATUS.next_alarm = parse_when
-                # print "Scheduled alarm for %s ('%s') (starting %s)" % (when.start_time, event.title.text, t)
+                print "Scheduled alarm for %s ('%s') (starting %s)" % (when.start_time, event.title.text, t)
                 scheduler.add_cron_job(do_alarm, month=t.month, day=t.day, hour=t.hour, minute=t.minute, second=t.second)
 
 def do_alarm():
@@ -91,8 +91,6 @@ def do_alarm():
 
 def start_calendar_scheduler():
     calendar_service.ProgrammaticLogin()
-
-    # do_alarm()
     check_calendar()
     scheduler.add_interval_job(check_calendar, seconds=CHECK_CALENDAR_EVERY)  #  define refresh rate.
     scheduler.start()                                     #  runs the program indefinitely on an interval of x seconds
