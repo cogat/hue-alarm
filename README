@@ -1,17 +1,14 @@
-There are 2 runnable parts:
+hue.py spawns:
 
-1) wakeup.py, a background process that checks a google calendar and schedules alarms
+* a UI for controlling the light manually
+* a background process that checks a google calendar and schedules alarms
 
-2) hue.py, a UI for controlling the light manually
-
-To install, test both parts run independenly, then edit /etc/rc.local to add:
+To install, test hue.py runs independently, then edit /etc/rc.local to add:
 
 cd /home/pi/hue/
 . ./env/bin/activate
-screen -dmS wakeup ./wakeup.py
 screen -S hue ./hue.py
 
 
-You can 'peep in' on these by running
+You can 'peep in' on the screen version by running
 sudo screen -x hue
-sudo screen -x wakeup

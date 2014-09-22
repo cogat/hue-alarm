@@ -150,8 +150,8 @@ def start_ui():
 
             if charcode in [ord('x')]:
                 [show_preset('off', B) for B in settings.BULBS]
-                display_message("Bye.")
-                exit()
+                display_message("All off.")
+                # exit()
 
             elif char == '1':
                 [show_preset('relax', B) for B in settings.BULBS]
@@ -183,27 +183,3 @@ def start_ui():
         stdscr.keypad(0)
         curses.echo()
         curses.endwin()
-
-
-#
-#
-# BUTTONS = [
-#     (lcd.UP, press_up),
-#     (lcd.DOWN, press_down),
-#     (lcd.LEFT, press_left),
-#     (lcd.RIGHT, press_right),
-#     (lcd.SELECT, press_select),
-# ]
-
-# def start_ui():
-#     prev = None
-#     while True:
-#         any_button_pressed = False
-#         for b in BUTTONS:
-#             if lcd.buttonPressed(b[0]):
-#                 any_button_pressed = True
-#                 if b is not prev:
-#                     b[1]()
-#                     prev = b
-#         if not any_button_pressed:
-#             prev = None
