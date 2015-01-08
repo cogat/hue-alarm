@@ -5,11 +5,13 @@
     and schedule a wake sequence.
     Adapted from Simple Google Calendar Alarm Clock by Bart Bania
 """
+from pprint import pprint
 from apscheduler.scheduler import Scheduler
 
-import gdata.calendar.service as GServ
 from datetime import datetime, timedelta
 from dateutil import parser
+import httplib2
+from oauth2client.file import Storage
 import pytz
 from lcdui import STATUS
 from lib.net import wait_until_network
@@ -19,8 +21,10 @@ import settings
 import logging
 logging.basicConfig()
 
+local = pytz.timezone(settings.TIMEZONE)
+
 if settings.DEBUG:
-    CHECK_CALENDAR_EVERY = 10 #secs
+    CHECK_CALENDAR_EVERY = 60 #secs
 else:
     CHECK_CALENDAR_EVERY = 60*10 #secs
 
@@ -28,23 +32,46 @@ else:
 scheduler = Scheduler()
 
 # set up a google calendar connection
-calendar_service = GServ.CalendarService()
-calendar_service.email = settings.G_LOGIN
-calendar_service.password = settings.G_PASSWORD
-calendar_service.source = 'RPi Alarm Clock'
+from apiclient.discovery import build
 
-local = pytz.timezone(settings.TIMEZONE)
+from oauth2client import client
+
+
+def establish_service():
+    flow = client.flow_from_clientsecrets(
+        'client_secrets.json',
+        scope='https://www.googleapis.com/auth/calendar.readonly',
+        redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+
+    storage = Storage('credentials.json')
+
+    credentials = storage.get()
+
+    if not credentials:
+        auth_uri = flow.step1_get_authorize_url()
+        import webbrowser
+        webbrowser.open_new(auth_uri)
+
+        auth_code = raw_input('Enter the auth code: ')
+        credentials = flow.step2_exchange(auth_code)
+        storage.put(credentials)
+
+    http_auth = credentials.authorize(httplib2.Http())
+
+    return build('calendar', 'v3', http_auth)
+
+service = establish_service()
 
 def check_calendar():
     print 'Query for "%s" events on %s' % (settings.CALENDAR_QUERY, settings.CALENDAR_NAME)
 
-    query = GServ.CalendarEventQuery(user=settings.CALENDAR_NAME, visibility="private", projection='full', text_query=settings.CALENDAR_QUERY)
-    query.start_min = local.localize(datetime.now()).isoformat()
-    query.start_max = local.localize(datetime.now() + timedelta(days=7)).isoformat()
-    query.singleevents = 'true'  #  enables creation of repeating events
-
-    feed = calendar_service.CalendarQuery(query)
-    local_now = local.localize(datetime.now())
+    request = service.events().list(
+        calendarId=settings.CALENDAR_NAME,
+        q=settings.CALENDAR_QUERY,
+        timeMax = local.localize(datetime.now() + timedelta(days=7)).isoformat(),
+        timeMin = local.localize(datetime.now()).isoformat(),
+        singleEvents=True)
+    response = request.execute()
 
     #clear out current schedule of alarms - just in case any are deleted or changed
     try:
@@ -52,15 +79,16 @@ def check_calendar():
     except KeyError:
         pass
 
-    for i, event in enumerate(feed.entry):
-        for when in event.when:
-            parse_when = parser.parse(when.start_time)
-            t = parse_when - timedelta(seconds=settings.PRE_WAKEUP_TIME)
-            if t > local_now:
-                if (STATUS.next_alarm is None) or (parse_when < STATUS.next_alarm):
-                    STATUS.next_alarm = parse_when
-                print "Scheduled alarm for %s ('%s') (starting %s)" % (when.start_time, event.title.text, t)
-                scheduler.add_cron_job(do_alarm, month=t.month, day=t.day, hour=t.hour, minute=t.minute, second=t.second)
+    local_now = local.localize(datetime.now())
+
+    for event in response['items']:
+        parse_when = parser.parse(event['start']['dateTime'])
+        t = parse_when - timedelta(seconds=settings.PRE_WAKEUP_TIME)
+        if t > local_now:
+            if (STATUS.next_alarm is None) or (parse_when < STATUS.next_alarm):
+                STATUS.next_alarm = parse_when
+            print "%s: Scheduled alarm for %s ('%s') (starting %s)" % (datetime.now(), event['start']['dateTime'], event['summary'], t)
+            scheduler.add_cron_job(do_alarm, month=t.month, day=t.day, hour=t.hour, minute=t.minute, second=t.second)
 
 def do_alarm():
     STATUS.next_alarm = None
@@ -89,11 +117,11 @@ def do_alarm():
     #
     # player.wait()
 
+
 def start_calendar_scheduler():
-    calendar_service.ProgrammaticLogin()
     check_calendar()
     scheduler.add_interval_job(check_calendar, seconds=CHECK_CALENDAR_EVERY)  #  define refresh rate.
-    scheduler.start()                                     #  runs the program indefinitely on an interval of x seconds
+    scheduler.start()  #  runs the program indefinitely on an interval of x seconds
 
 
 if __name__ == '__main__':
@@ -101,3 +129,4 @@ if __name__ == '__main__':
     start_calendar_scheduler()
     while True:
         pass
+

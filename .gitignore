@@ -17,3 +17,6 @@ settings.py
 audio/
 *.mp3
 unused/
+
+credentials.json
+client_secrets.json
