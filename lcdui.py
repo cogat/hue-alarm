@@ -5,9 +5,10 @@ import curses
 from threading import Timer
 from datetime import timedelta, datetime, time
 from lib.libhue import modify_temperature, modify_brightness, set_state, toggle
-from lib.net import get_ip_address
 from presets import turn_off_after, show_preset
 import settings
+from lib.net import wait_until_network, get_ip_address
+
 
 stdscr = None
 
@@ -72,7 +73,10 @@ class Status(object):
             else:
                 formatted_turn_off = ""
 
-            line1 = "%s a%s %s" % (_t(formatted_time,5), _t(self.next_alarm.time(), 5), _t(formatted_turn_off, 3))
+            if self.next_alarm:
+                line1 = "%s a%s %s" % (_t(formatted_time,5), _t(self.next_alarm.time(), 5), _t(formatted_turn_off, 3))
+            else:
+                line1 = "%s xx:xx %s" % (_t(formatted_time,5), _t(formatted_turn_off, 3))                
         if line2 is None:
             formatted_brightness = unicode(int(round(self.brightness * 100)))
             line2 = "%s%% %s" % (_t(formatted_brightness, 3), _t(self.weather, 11))
@@ -183,3 +187,11 @@ def start_ui():
         stdscr.keypad(0)
         curses.echo()
         curses.endwin()
+        
+        
+if __name__ == "__main__":
+    display_message("waiting for\nnetwork...", "RED")
+    wait_until_network()
+    host_ip = get_ip_address()
+    display_message("connected:\n%s" % host_ip, "VIOLET")
+    start_ui()
