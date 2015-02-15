@@ -60,9 +60,7 @@ def establish_service():
 
     return build('calendar', 'v3', http_auth)
 
-service = establish_service()
-
-def check_calendar():
+def check_calendar(service):
     print 'Query for "%s" events on %s' % (settings.CALENDAR_QUERY, settings.CALENDAR_NAME)
 
     request = service.events().list(
@@ -118,15 +116,17 @@ def do_alarm():
     # player.wait()
 
 
-def start_calendar_scheduler():
-    check_calendar()
-    scheduler.add_interval_job(check_calendar, seconds=CHECK_CALENDAR_EVERY)  #  define refresh rate.
+def start_calendar_scheduler(service):
+    def cc():
+        check_calendar(service)
+    scheduler.add_interval_job(cc, seconds=CHECK_CALENDAR_EVERY)  #  define refresh rate.
     scheduler.start()  #  runs the program indefinitely on an interval of x seconds
 
 
 if __name__ == '__main__':
     wait_until_network()
-    start_calendar_scheduler()
+    service = establish_service()
+    start_calendar_scheduler(service)
     while True:
         pass
 
